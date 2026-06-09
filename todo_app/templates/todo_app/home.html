@@ -1,0 +1,143 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inklings — To Do</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'todo_app/style.css' %}" />
+</head>
+<body>
+
+  <div class="bg-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <main class="container">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-icons">
+        <svg class="icon inkpot" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="24" cy="34" rx="13" ry="9" fill="#b8d4f0" opacity="0.7"/>
+          <rect x="17" y="20" width="14" height="16" rx="4" fill="#c9e0f7" stroke="#a4c8ec" stroke-width="1.2"/>
+          <path d="M21 20 C21 16 24 13 24 13 C24 13 27 16 27 20" stroke="#a4c8ec" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <ellipse cx="24" cy="20" rx="3.5" ry="1.5" fill="#a4c8ec" opacity="0.6"/>
+          <path d="M22 27 Q24 30 26 27" stroke="#7aadd6" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <circle cx="24" cy="24" r="1.5" fill="#7aadd6" opacity="0.5"/>
+        </svg>
+
+        <div class="heading-block">
+          <h1 class="title">Inklings</h1>
+          <p class="subtitle">your quiet little task keeper</p>
+        </div>
+
+        <svg class="icon feather" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M38 6 C38 6 14 16 10 36 C10 36 18 28 24 26" stroke="#f4a7c0" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+          <path d="M38 6 C30 10 20 20 18 38" stroke="#f9c8d8" stroke-width="1" stroke-linecap="round" fill="none"/>
+          <path d="M38 6 C38 6 32 8 26 14 C20 20 16 30 15 38" fill="#fde8ef" stroke="#f4a7c0" stroke-width="1.2" stroke-linejoin="round"/>
+          <path d="M36 8 C28 12 20 22 15 38" stroke="#f4a7c0" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.6"/>
+          <path d="M33 10 C25 15 18 24 15 38" stroke="#f4a7c0" stroke-width="0.6" stroke-linecap="round" fill="none" opacity="0.4"/>
+          <line x1="15" y1="38" x2="10" y2="44" stroke="#f4a7c0" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </header>
+
+    <!-- Add Task -->
+    <section class="add-section">
+        <form method="post" onsubmit="validate(event)" action="/add/">
+        {% csrf_token %}
+      <div class="input-row">
+        <input
+          type="text"
+          id="taskInput"
+          class="task-input"
+          placeholder="jot something down…"
+          maxlength="120"
+          autocomplete="off"
+          name="content"
+          required
+        />
+        
+        <button class="add-btn" id="addBtn" type="submit">
+          <span class="btn-plus">+</span>
+          <span class="btn-label">add</span>
+        </button>
+      </div>
+      </form>
+    </section>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+      <button class="tab active" data-filter="all" onclick="setFilter('all')">all</button>
+      <button class="tab" data-filter="active" onclick="setFilter('active')">pending</button>
+      <button class="tab" data-filter="done" onclick="setFilter('done')">done</button>
+    </div>
+
+    <!-- Task List -->
+  
+     {% if todos %}
+     <div>
+    <ul class="task-list" id="taskList">
+      <!-- tasks injected here -->
+       {% for todo in todos %}
+        <li class="task-item">
+          <p> {{ todo.content }}</p>
+      <!-- deletion handling -->
+          <a href="/delete/{{ todo.id }}/">
+          <button class="delete-btn">Delete</button>
+          </a>
+          </li>
+        {% endfor %}
+    </ul></div>
+    <!-- Empty state -->
+    {% else %}
+    <div class="empty-state" id="emptyState">
+      <svg viewBox="0 0 80 60" fill="none" class="empty-svg">
+        <path d="M20 50 Q40 20 60 50" stroke="#f4a7c0" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <circle cx="40" cy="30" r="8" fill="#fde8ef" stroke="#f4a7c0" stroke-width="1"/>
+        <path d="M37 30 Q40 26 43 30" stroke="#f4a7c0" stroke-width="1" fill="none" stroke-linecap="round"/>
+      </svg>
+      <p>nothing here yet — start writing</p>
+    </div>
+    {% endif %}
+    
+    <!-- Footer count -->
+    <footer class="footer" id="footer">
+      <span id="countLabel">{{ count }}</span>
+    </footer>
+
+  </main>
+
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <p class="modal-title">edit task</p>
+      <input type="text" id="editInput" class="task-input modal-input" maxlength="120"/>
+      <div class="modal-actions">
+        <button class="modal-cancel">cancel</button>
+        <button class="modal-save">save</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    //console.log("script called")
+    function validate(event){
+    input = document.getElementById("taskInput")
+    //console.log("validation called")
+    if (input.value.trim() === "") {
+      input.classList.add("error");
+      event.preventDefault();
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>
