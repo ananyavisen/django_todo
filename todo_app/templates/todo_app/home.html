@@ -87,8 +87,12 @@
     <ul class="task-list" id="taskList">
       <!-- tasks injected here -->
        {% for todo in todos %}
-        <li class="task-item">
-          <p> {{ todo.content }}</p>
+       <li class="task-item {% if todo.completion %}done{% endif %}">
+          <label class="check-wrap">
+      <input type="checkbox" {% if todo.completion %}checked{% endif %}/>
+      <div class="check-box"><span class="tick">✓</span></div>
+    </label>
+          <p class="task-text"> {{ todo.content }}</p>
       <!-- deletion handling -->
           <a href="/delete/{{ todo.id }}/">
           <button class="delete-btn">Delete</button>
@@ -137,6 +141,13 @@
       event.preventDefault();
       }
       return true;
+    }
+
+    function toggleTask(taskid){
+    window.location.href = "/update/" + taskid + "/";
+      completed = document.getElementById("task-item")
+      completed.classList.toggle("done")
+
     }
   </script>
 </body>

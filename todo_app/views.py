@@ -21,3 +21,9 @@ def deleteTodo(request, id):
     todo = Todo.objects.filter(id=id)
     todo.delete()
     return redirect("/")
+
+def completion(request, id):
+    todo = Todo.objects.get(id=id)
+    todo.completion = not todo.completion
+    todo.save()
+    return redirect("/")

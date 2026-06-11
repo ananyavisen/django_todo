@@ -298,19 +298,34 @@ body {
   animation: fadeUp 0.7s 0.35s ease both;
 }
 
-.task-item p {
-  font-family: var(--font-display);
+.task-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
+
   padding: 15px 18px;
   background: var(--card-bg);
   border-radius: var(--radius-md);
   border: 1.5px solid transparent;
   box-shadow: var(--shadow-soft);
   backdrop-filter: blur(8px);
-  transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s, opacity 0.3s;
+
+  transition: transform 0.22s,
+              box-shadow 0.22s,
+              border-color 0.22s,
+              opacity 0.3s;
+
   animation: slideIn 0.35s ease both;
+}
+
+.task-item p {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: bold;
+}
+
+.task-item a {
+  margin-left: auto;
 }
 
 .task-item:hover {
@@ -355,7 +370,7 @@ body {
 }
 
 .check-box {
-  width: 22px; height: 22px;
+  width: 16px; height: 16px;
   border-radius: 50%;
   border: 2px solid var(--pink-strong);
   display: flex;
@@ -430,13 +445,12 @@ body {
 }
 
 .delete-btn {
-  background: var(--pink-light);
+    background: var(--pink-light);
     color: var(--pink-deep);
-    border: none !important;
-    outline: none;
+    border: none;
     cursor: pointer;
-    padding: 8px 14px;
-    border-radius: 8px !important;
+    padding: 6px 12px;
+    border-radius: 8px;
 }
 
 .delete-btn:hover {
