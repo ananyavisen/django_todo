@@ -5,11 +5,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Inklings — To Do</title>
+  <title>Inklings - To Do</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'todo_app/style.css' %}" />
+  <link href="{% static 'todo_app/favicon.ico' %}" rel="icon" type="image/x-icon">
 </head>
 <body>
 
@@ -27,13 +28,13 @@
       <button class="cal-nav" id="calNext">&#8250;</button>
     </div>
     <div class="cal-grid">
-      <span class="cal-day-name">Mo</span>
-      <span class="cal-day-name">Tu</span>
-      <span class="cal-day-name">We</span>
-      <span class="cal-day-name">Th</span>
-      <span class="cal-day-name">Fr</span>
-      <span class="cal-day-name">Sa</span>
-      <span class="cal-day-name">Su</span>
+      <span class="cal-day-name">Mon</span>
+      <span class="cal-day-name">Tue</span>
+      <span class="cal-day-name">Wed</span>
+      <span class="cal-day-name">Thu</span>
+      <span class="cal-day-name">Fri</span>
+      <span class="cal-day-name">Sat</span>
+      <span class="cal-day-name">Sun</span>
     </div>
     <div class="cal-days" id="calDays"></div>
     <p class="cal-today-label" id="calTodayLabel"></p>
@@ -70,7 +71,7 @@
 
     <!-- Add Task -->
     <section class="add-section">
-        <form method="post" onsubmit="validate(event)" action="/add/">
+        <form method="post" onsubmit="validate(event)" action="/add/?date={{ date|date:'Y-m-d' }}&filter={{ filter }}">
         {% csrf_token %}
       <div class="input-row">
         <input
@@ -94,9 +95,9 @@
 
     <!-- Filter Tabs -->
     <div class="filter-tabs">
-      <a href="/?filter=all" class="tab active">all</a>
-      <a href="/?filter=pending" class="tab">pending</a>
-      <a href="/?filter=done" class="tab">done</a>
+      <a href="/?filter=all&date={{ date|date:'Y-m-d' }}" class="tab active">all</a>
+      <a href="/?filter=pending&date={{ date|date:'Y-m-d' }}" class="tab">pending</a>
+      <a href="/?filter=done&date={{ date|date:'Y-m-d' }}" class="tab">done</a>
     </div>
 
     <!-- Task List -->
@@ -113,7 +114,7 @@
     </label>
           <p class="task-text"> {{ todo.content }}</p>
       <!-- deletion handling -->
-          <a href="/delete/{{ todo.id }}/">
+          <a href="/delete/{{ todo.id }}/?date={{ date|date:'Y-m-d' }}">
           <button class="delete-btn">Delete</button>
           </a>
           </li>
@@ -134,6 +135,11 @@
     <!-- Footer count -->
     <footer class="footer" id="footer">
       <span id="countLabel">{{ count }}</span>
+      {% if date %}
+        <span id="countLabel">Dated: {{date|date:"d F Y" }}</span>
+      {% else %}
+        <span id="countLabel">Dated: till now </span>
+      {% endif %}
     </footer>
 
   </main></div>
@@ -181,13 +187,32 @@ const SHORT_MONTHS = [
 'Jul','Aug','Sep','Oct','Nov','Dec'
 ];
 
-let viewYear, viewMonth, selectedDate;
+let viewYear, viewMonth;
+
+let selectedDate = null;
+
+const params = new URLSearchParams(window.location.search);
+const dateParam = params.get("date");
+
+if (dateParam) {
+    const [year, month, day] = dateParam.split("-").map(Number);
+
+    selectedDate = {
+        d: day,
+        m: month - 1,
+        y: year
+    };
+}
 
 function initCalendar() {
 const now = new Date();
-viewYear  = now.getFullYear();
-viewMonth = now.getMonth();
-selectedDate = null;
+if (selectedDate) {
+    viewYear = selectedDate.y;
+    viewMonth = selectedDate.m;
+} else {
+    viewYear = now.getFullYear();
+    viewMonth = now.getMonth();
+}
 
 document.getElementById('calPrev').addEventListener('click', () => {
   viewMonth--;

@@ -325,6 +325,7 @@ body {
   margin: 0;
   font-family: var(--font-display);
   font-weight: bold;
+  font-size: 1.3rem;
 }
 
 .task-item a {
@@ -674,7 +675,7 @@ padding: 48px 24px 0px;
 .page-layout .container {
 padding: 0;
 flex: 1;
-max-width: 760px;
+max-width: 560px;
 min-width: 0;
 }
 
@@ -784,22 +785,17 @@ cursor: default;
 }
 
 .cal-day.cal-today {
-background: linear-gradient(135deg, var(--pink-strong), var(--pink-deep));
-color: white;
-font-weight: 500;
-box-shadow: 0 2px 8px rgba(224, 122, 154, 0.35);
+    border: 2px solid var(--pink-strong);
+    background: transparent;
+    color: var(--text-dark);
+    box-shadow: none;
 }
 
-.cal-day.cal-today:hover {
-background: linear-gradient(135deg, var(--pink-strong), var(--pink-deep));
-color: white;
-transform: scale(1.12);
-}
-
-.cal-day.cal-selected:not(.cal-today) {
-background: var(--blue-mid);
-color: var(--text-dark);
-font-weight: 500;
+.cal-day.cal-selected {
+    background: linear-gradient(135deg, var(--pink-strong), var(--pink-deep));
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(224, 122, 154, 0.35);
 }
 
 .cal-day.cal-other-month {
